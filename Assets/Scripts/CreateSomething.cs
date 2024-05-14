@@ -10,11 +10,19 @@ public class CreateSomething : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.M))
         {
-            GameManager.Instance.SoundManager.Play(ResourceEnum.BGM.time_for_adventure);
+            SoundManager.Play(ResourceEnum.BGM.time_for_adventure);
         }
         if(Input.GetKeyDown(KeyCode.Space)) 
         {
-            GameManager.Instance.SoundManager.Play(ResourceEnum.SFX.coin, Vector3.zero);
+            SoundManager.Play(ResourceEnum.SFX.coin, Vector3.zero);
+        }
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            PoolManager.Instantiate(ResourceEnum.Prefab.Arissa);
+        }
+        if(Input.GetKeyDown(KeyCode.S)) 
+        {
+            PoolManager.Destroy(FindAnyObjectByType<PoolingInfo>().gameObject);
         }
     }
 }

@@ -11,7 +11,6 @@ public delegate void StartFunction();
 public delegate void DestroyFunction();
 
 
-
 // 게임 매니저를 무조건 "하나만" 있도록
 // 싱글턴 패턴
 public class GameManager : MonoBehaviour
@@ -33,6 +32,8 @@ public class GameManager : MonoBehaviour
     public ControllerManager ControllerManager => controllerManager;
     NetworkManager networkManager;
     public NetworkManager NetworkManager => networkManager;
+    WorldManager worldManager;
+    public WorldManager WorldManager => worldManager;
     UIManager uiManager;
     public UIManager UiManager => uiManager;
 
@@ -92,23 +93,29 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (!isGameStart) return;
-        Debug.Log("gd");
         // start를 먼저해야함
         // 매니저는 제일 먼저
-        ManagerStarts?.Invoke();    
-        // Start를 실행한 애들은 전부 빼준다.
-        ManagerStarts = null; 
-        // 캐릭터는 매니저가 있어야 됨
-        CharacterStarts?.Invoke();
-        CharacterStarts= null;
-        // 컨트롤러는 캐릭터가 있어야 됨
-        ControllerStarts?.Invoke();
-        ControllerStarts= null;
+        if (ManagerStarts != null)
+        { 
+            ManagerStarts.Invoke();    
+            // Start를 실행한 애들은 전부 빼준다.
+            ManagerStarts = null; 
+        }
+        else
+        {
+            // 캐릭터는 매니저가 있어야 됨
+            CharacterStarts?.Invoke();
+            CharacterStarts= null;
+            // 컨트롤러는 캐릭터가 있어야 됨
+            ControllerStarts?.Invoke();
+            ControllerStarts= null;
 
-        ManagerUpdates?.Invoke(Time.deltaTime);
-        // 컨트롤을 받아 캐릭터에 전달하기 위해 컨트롤러를 먼저
-        ControllerUpdates?.Invoke(Time.deltaTime);
-        CharacterUpdates?.Invoke(Time.deltaTime);
+            ManagerUpdates?.Invoke(Time.deltaTime);
+            // 컨트롤을 받아 캐릭터에 전달하기 위해 컨트롤러를 먼저
+            ControllerUpdates?.Invoke(Time.deltaTime);
+            CharacterUpdates?.Invoke(Time.deltaTime);
+        }
+
 
         // 스타트 역순
         ControllerDestroies?.Invoke();
@@ -120,6 +127,25 @@ public class GameManager : MonoBehaviour
 
     }
     
+    public static void WorldChange(WorldManager newWorld)
+    {
+        if(!IsGameStart) 
+        {
+            Debug.LogWarning("Tried WorldChange before GameManager Loaded");
+            return;
+        }
+        if (newWorld == null || newWorld == Instance.worldManager) return;
+        // 기존 월드 제거
+        if(Instance.worldManager != null) Instance.worldManager.Delete();
+
+        // 새 월드 넣기
+        Instance.worldManager = newWorld;
+
+        // 새로운 월드가 하고싶었던 것
+        newWorld.Create();
+    }
+
+
     // 게임을 시작하자 => 업데이트 활성화
     // 업데이트를 어떻게하면 비활성화 할 수 있을까 (bool 없이)
     // 게임을 끝낸다 -> 업데이트 멈춤
@@ -132,6 +158,7 @@ public class GameManager : MonoBehaviour
         {
             instance.loadingCanvas.gameObject.SetActive(true);
             instance.loadingCanvas.SetLoadInfo(info);
+            instance.isGameStart = false;
         }
         else
         {
@@ -144,6 +171,7 @@ public class GameManager : MonoBehaviour
         if(instance && instance.loadingCanvas)
         {
             instance.loadingCanvas.gameObject.SetActive(false);
+            instance.isGameStart = true;
         }
         else
         {

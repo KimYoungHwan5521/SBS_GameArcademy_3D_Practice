@@ -14,7 +14,7 @@ public class LoadingCanvas : MonoBehaviour
     // 이것 가지고 로딩 정보를 입력할 수 있도록
     public void SetLoadInfo(string currentInfo)
     {
-        loadingText.text = $"Now Loading..<br>{currentInfo}";
+        loadingText.text = $"Now Loading.. {currentInfo}";
         loadingBar.fillAmount = ResourceManager.resourceLoadCompleted / ResourceManager.resourceAmount;
         loadingProgressText.text = $"{ ResourceManager.resourceLoadCompleted / ResourceManager.resourceAmount * 100}%";
     }

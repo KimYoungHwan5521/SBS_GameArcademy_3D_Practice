@@ -84,7 +84,7 @@ public class SoundManager : Manager
         }
     }
 
-    public void Play(ResourceEnum.BGM wantBGM)
+    public static void Play(ResourceEnum.BGM wantBGM)
     {
         // 0 : 플레이할 브금
         // 1 : 플레이중인 브금
@@ -106,7 +106,7 @@ public class SoundManager : Manager
         SM.AudioEffectUpdate += SM.UpdateBGMMixer;
     }
 
-    public void Play(ResourceEnum.SFX wantSFX, Vector3 soundOrigin)
+    public static void Play(ResourceEnum.SFX wantSFX, Vector3 soundOrigin)
     {
         AudioClip wantClip = ResourceManager.GetSFX(wantSFX);
         SoundManager SM = GameManager.Instance.SoundManager;
@@ -116,7 +116,7 @@ public class SoundManager : Manager
             curSource.clip = wantClip;
             curSource.transform.position = soundOrigin;
             curSource.Play();
-            sfxQueue.Enqueue(curSource);
+            SM.sfxQueue.Enqueue(curSource);
         }
     }
 
