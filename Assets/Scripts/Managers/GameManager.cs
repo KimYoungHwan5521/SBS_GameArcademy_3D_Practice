@@ -39,12 +39,17 @@ public class GameManager : MonoBehaviour
 
     public static UpdateFunction ManagerUpdates;
     public static UpdateFunction CharacterUpdates;
+    public static UpdateFunction ObjectUpdates;
     public static UpdateFunction ControllerUpdates;
+
     public static StartFunction ManagerStarts;
     public static StartFunction CharacterStarts;
+    public static StartFunction ObjectStarts;
     public static StartFunction ControllerStarts;
+
     public static DestroyFunction ManagerDestroies;
     public static DestroyFunction CharacterDestroies;
+    public static DestroyFunction ObjectDestroies;
     public static DestroyFunction ControllerDestroies;
 
     LoadingCanvas loadingCanvas;
@@ -103,6 +108,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            ObjectStarts?.Invoke();
+            ObjectStarts = null;
             // 캐릭터는 매니저가 있어야 됨
             CharacterStarts?.Invoke();
             CharacterStarts= null;
@@ -113,6 +120,7 @@ public class GameManager : MonoBehaviour
             ManagerUpdates?.Invoke(Time.deltaTime);
             // 컨트롤을 받아 캐릭터에 전달하기 위해 컨트롤러를 먼저
             ControllerUpdates?.Invoke(Time.deltaTime);
+            ObjectUpdates?.Invoke(Time.deltaTime);
             CharacterUpdates?.Invoke(Time.deltaTime);
         }
 
@@ -122,6 +130,8 @@ public class GameManager : MonoBehaviour
         ControllerDestroies= null;
         CharacterDestroies?.Invoke();
         CharacterDestroies= null;
+        ObjectDestroies?.Invoke(); 
+        ObjectDestroies= null;
         ManagerDestroies?.Invoke();
         ManagerDestroies= null;
 

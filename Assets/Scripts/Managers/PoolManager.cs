@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class PoolManager : Manager
 {
@@ -41,9 +42,6 @@ public class PoolManager : Manager
     void ReadyStock(ResourceEnum.Prefab target)
     {
         GameObject inst = GameObject.Instantiate(ResourceManager.GetPrefab(target));
-        // 만들어놓고 꺼놓기
-        inst.AddComponent<PoolingInfo>().SetInfo(target);
-        inst.SetActive(false);
 
         // 꺼놓은 오브젝트는 Find로 찾을수 없다.
         // 그래서 미리 저장 해두어야 한다.
@@ -61,10 +59,13 @@ public class PoolManager : Manager
             result = new Queue<GameObject>();
             prefabDictionary[target] = result;
         }
+        // 만들어놓고 꺼놓기
+        inst.AddComponent<PoolingInfo>().SetInfo(target, result);
+        inst.SetActive(false);
         result.Enqueue(inst);
     }
 
-    public static GameObject Instantiate(ResourceEnum.Prefab target)
+    public static GameObject Instanciate(ResourceEnum.Prefab target)
     {
         if(!GameManager.Instance.WorldManager || GameManager.Instance.WorldManager.PoolManager == null)
         {
@@ -90,10 +91,38 @@ public class PoolManager : Manager
         }
 
         GameObject result = resultQueue.Dequeue();
-        result.transform.eulerAngles = new Vector3(Random.Range(0, 359), Random.Range(0, 359), Random.Range(0, 359));
+        //result.transform.eulerAngles = new Vector3(Random.Range(0, 359), Random.Range(0, 359), Random.Range(0, 359));
         result.SetActive(true);
         return result;
 
+    }
+
+    public static GameObject Instanciate(ResourceEnum.Prefab target, Vector3 position)
+    {
+        GameObject result = Instanciate(target);
+        result.transform.position = position;
+        return result;
+    }
+
+
+    public static GameObject Instanciate(ResourceEnum.Prefab target, Vector3 position, Vector3 eulerAngles)
+    {
+        GameObject result = Instanciate(target, position);
+        result.transform.eulerAngles = eulerAngles;
+        return result;
+    }
+
+
+    public static GameObject Instanciate(ResourceEnum.Prefab target, Transform wantParent)
+    {
+        GameObject origin = ResourceManager.GetPrefab(target);
+        GameObject result = Instanciate(target);
+        result.transform.SetParent(wantParent);
+        // 한 번 만들었던 걸 재활용한걸 가져오면 포지션값이 변경되어 있을 수 있기 때문에 원본 프리팹의 트랜스폼 정보를 가져온다.
+        result.transform.localPosition = origin.transform.position;
+        result.transform.localRotation = origin.transform.rotation;
+        result.transform.localScale = origin.transform.localScale;
+        return result;
     }
 
     public static void Destroy(GameObject target)
@@ -113,6 +142,34 @@ public class PoolManager : Manager
         else
         {
             GameObject.Destroy(target);
+        }
+    }
+
+    
+    public static void Destroy(PoolingInfo info, float time = 5f)
+    {
+        GameObject target = info.gameObject;
+        if (GameManager.Instance.WorldManager.PoolManager.prefabDictionary.TryGetValue(info.Origin, out Queue<GameObject> resultQueue))
+        {
+            resultQueue.Enqueue(target);
+            target.SetActive(false);
+        }
+        else
+        {
+            GameObject.Destroy(target);
+        }
+    }
+
+
+    public static void Destroy(GameObject target, float time)
+    {
+        if(target.TryGetComponent(out PoolingInfo info))
+        {
+            info.Lifespan= time;
+        }
+        else
+        {
+            GameObject.Destroy(target, time);
         }
     }
 

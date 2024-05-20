@@ -18,11 +18,13 @@ public class CreateSomething : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.A))
         {
-            PoolManager.Instantiate(ResourceEnum.Prefab.Arissa);
+            PoolManager.Destroy(PoolManager.Instanciate(ResourceEnum.Prefab.Arissa), 3f);
         }
+        /*
         if(Input.GetKeyDown(KeyCode.S)) 
         {
-            PoolManager.Destroy(FindAnyObjectByType<PoolingInfo>().gameObject);
+            PoolManager.Destroy(FindAnyObjectByType<PoolingInfo>().gameObject, 3f);
         }
+        */
     }
 }

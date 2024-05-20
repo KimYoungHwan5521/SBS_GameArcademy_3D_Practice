@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabs: 00000000
-  prefabCounts: f4010000
+  prefabCounts: 01000000
 --- !u!1 &896962052
 GameObject:
   m_ObjectHideFlags: 0
