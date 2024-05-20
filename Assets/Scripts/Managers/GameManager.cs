@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     public static DestroyFunction ControllerDestroies;
 
     LoadingCanvas loadingCanvas;
+    public LogInCanvas loginCanvas;
 
     bool isGameStart = false;
     // 모두가 볼 수 있게
@@ -67,6 +68,7 @@ public class GameManager : MonoBehaviour
         this.MakeSingleton(ref instance);
 
         loadingCanvas = GetComponentInChildren<LoadingCanvas>();
+        loginCanvas = GetComponentInChildren<LogInCanvas>();
 
         resourceManager = new ResourceManager();
         yield return resourceManager.Initiate();
