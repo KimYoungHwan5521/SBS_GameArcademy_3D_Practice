@@ -13,7 +13,7 @@ public class WaitForFunction : CustomYieldInstruction
     {
         isWating = true;
 
-        wantFunction?.Invoke();
+        //wantFunction?.Invoke();
 
         Run(wantFunction);
     }

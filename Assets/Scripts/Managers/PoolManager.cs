@@ -65,7 +65,7 @@ public class PoolManager : Manager
         result.Enqueue(inst);
     }
 
-    public static GameObject Instanciate(ResourceEnum.Prefab target)
+    public static GameObject Instantiate(ResourceEnum.Prefab target)
     {
         if(!GameManager.Instance.WorldManager || GameManager.Instance.WorldManager.PoolManager == null)
         {
@@ -99,7 +99,7 @@ public class PoolManager : Manager
 
     public static GameObject Instanciate(ResourceEnum.Prefab target, Vector3 position)
     {
-        GameObject result = Instanciate(target);
+        GameObject result = Instantiate(target);
         result.transform.position = position;
         return result;
     }
@@ -116,7 +116,7 @@ public class PoolManager : Manager
     public static GameObject Instanciate(ResourceEnum.Prefab target, Transform wantParent)
     {
         GameObject origin = ResourceManager.GetPrefab(target);
-        GameObject result = Instanciate(target);
+        GameObject result = Instantiate(target);
         result.transform.SetParent(wantParent);
         // 한 번 만들었던 걸 재활용한걸 가져오면 포지션값이 변경되어 있을 수 있기 때문에 원본 프리팹의 트랜스폼 정보를 가져온다.
         result.transform.localPosition = origin.transform.position;

@@ -2,7 +2,7 @@ namespace ResourceEnum
 {
     public enum Prefab
     {
-        Arissa,
+        Arissa, LogInCanvas, ErrorWindow,
     }
 
     public enum Sprite

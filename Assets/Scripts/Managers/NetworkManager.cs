@@ -26,6 +26,9 @@ public class NetworkManager : Manager
         if(initializer.IsSuccess())
         {
             currentState++;
+            // 여기 단계에서 네트워크에 연결됨
+            // 로그인창을 열 준비 : 게임이 본격적으로 시작될 때
+            GameManager.ManagerStarts += () => { UIManager.Open(UIManager.UIType.LogIn); };
         }
         else
         {
@@ -36,20 +39,75 @@ public class NetworkManager : Manager
 
     }
 
-    public static IEnumerator LogIn(string inputID, string inputPassword)
+    public static void ClaimSignIn(string inputID, string inputPassword)
     {
-        BackendReturnObject loginObject = null;
-        yield return new WaitForFunction(() => { loginObject = Backend.BMember.CustomLogin(inputID, inputPassword); });
-        if(loginObject.IsSuccess())
-        {
+        //bool loginSuccess = false;
+        string errorMessage = "";
+        GameManager.Instance.StartCoroutine(new WaitForFunction(() => {
+            BackendReturnObject loginObject = null;
+            loginObject = Backend.BMember.CustomLogin(inputID, inputPassword);
+            if(loginObject.IsSuccess())
+            {
 
-            Debug.Log($"Log in Successed : {loginObject}");
-            GameManager.Instance.loginCanvas.CloseLogInWindow();
+                Debug.Log($"Log in Successed : {loginObject}");
+                //loginSuccess = true;
+                // WaitForFuction은 멀티쓰레드를 사용하고 있다.
+                // SetActive()는 메인쓰레드가 아닌 곳에서 호출되면 UnityException에러가 발생하며 호출이 무시된다.
+                GameManager.ManagerStarts += () => UIManager.ClaimError("로그인 성공!", "로그인 성공!", "확인", null);
+            }
+            else
+            {
+                Debug.Log($"Log in Failed : {loginObject.GetMessage()}");
+                GameManager.ManagerStarts += () => UIManager.ClaimError("오류", errorMessage, "확인", null);
+                errorMessage = $"Log in Failed : {loginObject.GetMessage()}";
+            }
+        }));
+        /*
+        if(loginSuccess)
+        {
+            UIManager.ClaimError("로그인 성공!", "로그인 성공!", "확인", null);
+            UIManager.Close(UIManager.UIType.LogIn);
+
         }
         else
         {
-            Debug.Log($"Log in Failed : {loginObject}");
+            UIManager.ClaimError("오류", errorMessage, "확인", null);
+
         }
-        yield return null;
+         */
+    }
+
+    public static void ClaimSignUp(string inputID, string inputPassword)
+    {
+        // bool signUpSuccess = false;
+        string errorMessage = "";
+        GameManager.Instance.StartCoroutine(new WaitForFunction(() =>
+        {
+            BackendReturnObject signUpObject = null;
+            signUpObject = Backend.BMember.CustomSignUp(inputID, inputPassword);
+            if(signUpObject.IsSuccess())
+            {
+                //signUpSuccess = true;
+                GameManager.ManagerStarts += () => UIManager.ClaimError("회원 가입 성공!", "회원 가입에 성공했습니다.", "확인", null);
+            }
+            else
+            {
+                Debug.Log($"Sign up failed : {signUpObject.GetMessage()}");
+                errorMessage = $"Sign up failed : {signUpObject.GetMessage()}";
+                GameManager.ManagerStarts += () => UIManager.ClaimError("오류", errorMessage, "확인", null);
+            }
+        }));
+        /*
+        if (signUpSuccess)
+        {
+            UIManager.ClaimError("회원 가입 성공!", "회원 가입에 성공했습니다.", "확인", null);
+
+        }
+        else
+        {
+            UIManager.ClaimError("오류", errorMessage, "확인", null);
+
+        }
+         */
     }
 }
