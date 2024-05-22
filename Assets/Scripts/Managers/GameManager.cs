@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // 공통적으로 사용하는 함수들의 모양을 미리 정의해봅시다
 // 델리게이트 (대리자) : Action Func를 만든 장본인
@@ -66,6 +67,9 @@ public class GameManager : MonoBehaviour
     private IEnumerator Start()
     {
         this.MakeSingleton(ref instance);
+        if (instance != this) yield break;
+        DontDestroyOnLoad(gameObject);
+
 
         loadingCanvas = GetComponentInChildren<LoadingCanvas>();
         loginCanvas = GetComponentInChildren<LogInCanvas>();
@@ -90,6 +94,9 @@ public class GameManager : MonoBehaviour
         ManagerUpdates += ControllerManager.ManagerUpdate;
         ManagerUpdates += UiManager.ManagerUpdate;
         
+        // 씬이 로드되었을 때 할 일을 등록
+        SceneManager.sceneLoaded += OnSceneLoad;
+
         CloseLoadInfo();
 
         isGameStart= true;
@@ -161,7 +168,11 @@ public class GameManager : MonoBehaviour
     // 게임을 시작하자 => 업데이트 활성화
     // 업데이트를 어떻게하면 비활성화 할 수 있을까 (bool 없이)
     // 게임을 끝낸다 -> 업데이트 멈춤
-
+    public void OnSceneLoad(Scene newScene, LoadSceneMode loadSceneMode)
+    {
+        SoundManager.StopAllSFX();
+        SoundManager.StopBGM();
+    }
 
     public static void ClaimLoadInfo(string info)
     {

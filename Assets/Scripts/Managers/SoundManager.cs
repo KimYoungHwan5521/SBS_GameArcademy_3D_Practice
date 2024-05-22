@@ -35,8 +35,10 @@ public class SoundManager : Manager
         if (!AMGsfx) Debug.LogWarning("Audio Mixer SFX has Not Found!");
 
         // 오디오 소스를 넣어 놓을 수 있는 오브젝트
+        Transform soundContainer = new GameObject("SoundContainer").transform;
+        soundContainer.SetParent(GameManager.Instance.transform);
         GameObject bgmCarrier = new GameObject("BGM Carrier", typeof(AudioSource), typeof(AudioSource));
-        bgmCarrier.transform.SetParent(GameObject.Find("GameManager").transform);
+        bgmCarrier.transform.SetParent(soundContainer);
         bgmArray = bgmCarrier.GetComponents<AudioSource>();
 
         // 싹다 돌면서 Audio Mixer Group을 준비
@@ -54,6 +56,7 @@ public class SoundManager : Manager
         for(int i = 0; i< SFXMaxNumber; i++)
         {
             GameObject sfxCarriers = new GameObject("SFX Carrier", typeof(AudioSource));
+            sfxCarriers.transform.SetParent(soundContainer);
             // 그 사운드 이펙트용으로 만든 오디오소스도 Audio Mixer Group을 SFX로
             AudioSource currentSource = sfxCarriers.GetComponent<AudioSource>();
             currentSource.outputAudioMixerGroup = AMGsfx;
@@ -117,6 +120,22 @@ public class SoundManager : Manager
             curSource.transform.position = soundOrigin;
             curSource.Play();
             SM.sfxQueue.Enqueue(curSource);
+        }
+    }
+
+    public static void StopBGM()
+    {
+        foreach(var audioSource in GameManager.Instance.SoundManager.bgmArray)
+        {
+            audioSource.Stop();
+        }
+    }
+
+    public static void StopAllSFX()
+    {
+        foreach (var audioSource in GameManager.Instance.SoundManager.sfxQueue)
+        {
+            audioSource.Stop();
         }
     }
 

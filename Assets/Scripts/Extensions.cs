@@ -13,7 +13,7 @@ public static class Extensions
     // 어차피 똑같은 역할을 하는 함수라면 자료형만 바꾸면 된다. : <Type>이라고 명시
     // GetComponent<T>()
     //                                                                제일 먼저온 놈을 저장해 논다.
-    public static WantType MakeSingleton<WantType>(this WantType target, ref WantType location)
+    public static WantType MakeSingleton<WantType>(this WantType target, ref WantType location, bool destroyObject = true)
     {
         // 제일 먼저 왔으면 : 저장
         if(location == null)
@@ -25,8 +25,21 @@ public static class Extensions
         {
             //                    타겟을 오브젝트인 것처럼 취급
             //                    오브젝트 아니면 -> null 반환
-            Object targetObject = target as Object;
-            if(targetObject) GameObject.Destroy(targetObject);
+            Component targetComponent = target as Component;
+
+            if(targetComponent)
+            {
+                GameObject.Destroy(destroyObject ? targetComponent.gameObject : targetComponent);
+
+            }
+            else
+            {
+                Object targetObject = target as Object;
+                if (targetObject)
+                {
+                    GameObject.Destroy(targetObject);
+                }
+            }
         }
         return location;
     }

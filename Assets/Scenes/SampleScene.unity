@@ -1212,28 +1212,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 870204176}
-  - component: {fileID: 870204175}
   - component: {fileID: 870204177}
   m_Layer: 0
-  m_Name: Test
+  m_Name: WorldManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &870204175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 870204174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d38e954b935e0e48a68903c92b0b51e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wantPrefab: 0
 --- !u!4 &870204176
 Transform:
   m_ObjectHideFlags: 0
@@ -1258,11 +1244,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 870204174}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d4d555f14bca9a4da5fa15c45c312d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 3cfd645facf61084f8226af1bb59814b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabs: 00000000
-  prefabCounts: 01000000
+  prefabs: 
+  prefabCounts: 
 --- !u!1 &896962052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1674,6 +1660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 963446613}
   - component: {fileID: 963446612}
+  - component: {fileID: 963446614}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1710,6 +1697,19 @@ Transform:
   - {fileID: 1135985721}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &963446614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963446611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d38e954b935e0e48a68903c92b0b51e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wantPrefab: 0
 --- !u!1 &1018282980
 GameObject:
   m_ObjectHideFlags: 0

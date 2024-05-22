@@ -21,9 +21,9 @@ public class CreateSomething : MonoBehaviour
             PoolManager.Destroy(PoolManager.Instantiate(ResourceEnum.Prefab.Arissa), 3f);
         }
         
-        if(Input.GetKeyDown(KeyCode.S)) 
+        if(Input.GetKeyDown(KeyCode.Q)) 
         {
-            UIManager.ClaimError("test", "test", "test", null);
+            NetworkManager.ClaimMatch();
         }
         
     }

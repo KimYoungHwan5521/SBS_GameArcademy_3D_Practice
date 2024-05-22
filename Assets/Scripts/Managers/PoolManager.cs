@@ -36,12 +36,18 @@ public class PoolManager : Manager
         yield return null;
     }
 
-    
+    Transform poolContainer;
+    public override IEnumerator Initiate()
+    {
+        if (poolContainer == null) poolContainer = new GameObject("poolContainer").transform;
+        yield return null;
+    }
 
     // 단 하나의 오브젝트를 생성하고 등록하는 과정
     void ReadyStock(ResourceEnum.Prefab target)
     {
         GameObject inst = GameObject.Instantiate(ResourceManager.GetPrefab(target));
+        inst.transform.SetParent(poolContainer);
 
         // 꺼놓은 오브젝트는 Find로 찾을수 없다.
         // 그래서 미리 저장 해두어야 한다.
