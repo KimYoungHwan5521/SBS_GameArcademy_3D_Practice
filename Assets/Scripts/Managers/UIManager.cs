@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class UIManager : Manager
 {
-    public enum UIType { LogIn, Chat, ErrorWindow }
+    public enum UIType { LogIn, Chat, ErrorWindow, CreateNickname }
     Dictionary<UIType, GameObject> prefabDictionary;
     Dictionary<UIType, GameObject> instanceDictionary;
 
@@ -24,6 +24,7 @@ public class UIManager : Manager
         instanceDictionary = new();
         prefabDictionary.Add(UIType.LogIn, ResourceManager.GetPrefab(ResourceEnum.Prefab.LogInCanvas));
         prefabDictionary.Add(UIType.ErrorWindow, ResourceManager.GetPrefab(ResourceEnum.Prefab.ErrorWindow));
+        prefabDictionary.Add(UIType.CreateNickname, ResourceManager.GetPrefab(ResourceEnum.Prefab.CreateNicknameCanvas));
 
         GameObject canvasObject = new("ErrorCanvas", typeof(Canvas), typeof(CanvasRenderer), typeof(CanvasScaler), typeof(GraphicRaycaster));
         errorCanvas = canvasObject.GetComponent<Canvas>();

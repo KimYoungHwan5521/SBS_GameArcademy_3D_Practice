@@ -14,6 +14,11 @@ public class LobbyManager : WorldManager
 
     protected override IEnumerator Initiate()
     {
+        NetworkManager networkManager = GameManager.Instance.NetworkManager;
+        if (networkManager.MyNickname == null)
+        UIManager.Open(UIManager.UIType.CreateNickname);
+        yield return new WaitWhile(() => networkManager.MyNickname == null);
+
         yield return NetworkManager.MatchMakingServer();
         yield return base.Initiate();
     }

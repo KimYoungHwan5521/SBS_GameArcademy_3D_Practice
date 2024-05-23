@@ -8,6 +8,7 @@ public class CreateSomething : MonoBehaviour
 
     void Update()
     {
+        /*
         if(Input.GetKeyDown(KeyCode.M))
         {
             SoundManager.Play(ResourceEnum.BGM.time_for_adventure);
@@ -21,10 +22,10 @@ public class CreateSomething : MonoBehaviour
             PoolManager.Destroy(PoolManager.Instantiate(ResourceEnum.Prefab.Arissa), 3f);
         }
         
+        */
         if(Input.GetKeyDown(KeyCode.Q)) 
         {
             NetworkManager.ClaimMatch();
         }
-        
     }
 }
