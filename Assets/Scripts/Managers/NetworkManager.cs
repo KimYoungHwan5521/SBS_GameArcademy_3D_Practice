@@ -10,19 +10,17 @@ using BackEnd.Tcp;
 public partial class NetworkManager : Manager
 {
     public enum NetworkState
-    {                                                   // 멀티캐릭터면 캐릭터까지 모두 접속해야 접속한 판정
-        Offline, Initiating, Connected, SignIn, OnMatchingServer, OnMatchRoom, Matching, WorldJoin, Disconnected
-    }                                            //접속할 때 데이터베이스 "단 한 번"은 확인 가능
+    {
+        // 멀티캐릭터면 캐릭터까지 모두 접속해야 접속한 판정
+        //접속할 때 데이터베이스 "단 한 번"은 확인 가능
+        Offline, Initiating, Connected, SignIn,
+        OnMatchingServer, OnMatchRoom, Matching, 
+        JoinGameServer, OnGameServer, OnGameRoom, 
+        WorldJoin, Disconnected
+    }
 
     NetworkState currentState = NetworkState.Offline;
     public NetworkState CurrentState => currentState;
-
-    public class MatchCard
-    {
-        public MatchType matchType;
-        public MatchModeType modeType;
-        public string inDate;
-    }
 
     public class UserInfo
     {
@@ -38,8 +36,50 @@ public partial class NetworkManager : Manager
             myInfo.nickname = value;
         }
     }
+    
+    public class MatchCard
+    {
+        public MatchType matchType;
+        public MatchModeType modeType;
+        public string inDate;
+    }
 
     public MatchCard[] matchCardArray;
+
+    
+    Dictionary<SessionId, MatchUserGameRecord> inGameUserInfoDictionary;
+    MatchUserGameRecord myGameRecord;
+    MatchUserGameRecord hostGameRecord;
+
+    public static MatchUserGameRecord GetUser(SessionId wantSessionId)
+    {
+        var targetDictionary = GameManager.Instance.NetworkManager.inGameUserInfoDictionary;
+        if (targetDictionary == null) return null;
+
+        if(targetDictionary.TryGetValue(wantSessionId, out MatchUserGameRecord result)) return result;
+        else
+        {
+            UIManager.ClaimError("오류", "유저 정보를 불러오지 못했습니다.", "확인", null);
+            return null;
+        }
+    }
+
+    void AddUserInfoToDictionary(MatchUserGameRecord wantUserInfo)
+    {
+        if(wantUserInfo == null) return;
+        var targetDictionary = GameManager.Instance.NetworkManager.inGameUserInfoDictionary;
+        if (targetDictionary.TryAdd(wantUserInfo.m_sessionId, wantUserInfo))
+        {
+            Debug.Log($"{wantUserInfo.m_nickname + (wantUserInfo.m_isSuperGamer? "(Host)" : "")} is in this room!");
+
+        }
+        else
+        {
+            targetDictionary[wantUserInfo.m_sessionId] = wantUserInfo;
+        }
+        if (wantUserInfo.m_isSuperGamer) hostGameRecord = wantUserInfo;
+        if (wantUserInfo.m_nickname == GameManager.Instance.NetworkManager.MyNickname) myGameRecord = wantUserInfo;
+    }
 
     public override IEnumerator Initiate()
     {

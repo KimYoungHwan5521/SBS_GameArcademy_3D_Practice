@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+// encoding
+using System.Text;
+using System.Runtime.InteropServices;
+using System;
 
 public static class Extensions
 {
@@ -34,7 +38,7 @@ public static class Extensions
             }
             else
             {
-                Object targetObject = target as Object;
+                UnityEngine.Object targetObject = target as UnityEngine.Object;
                 if (targetObject)
                 {
                     GameObject.Destroy(targetObject);
@@ -80,4 +84,51 @@ public static class Extensions
         return newPath[(path.LastIndexOf("/") + 1)..];
 
     }
+
+    public static byte[] ToByteArray_UTF8(this string target)
+    {
+        return Encoding.UTF8.GetBytes(target);
+    }
+
+    public static string ToString_UTF8(this byte[] target)
+    {
+        return Encoding.UTF8.GetString(target);
+    }
+
+    public static byte[] ToByteArray<T>(this T target) where T : struct
+    {
+        // C# 내장함수를 강제로 끄집어 내
+        int size = Marshal.SizeOf(typeof(T));
+        byte[] result = new byte[size];
+
+        // 메모리중 하나를 카리키는 포인터 : 여기다가 저장
+        // struct를 byte로 바꾸기 위해 저장할 공간을 할당
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        // 원본 구조체는 어디에 있나 찾아 ptr에 넣기
+        Marshal.StructureToPtr(target, ptr, false);
+        // 복사해서 배열에 넣기
+        Marshal.Copy(ptr, result, 0, size);
+        // 메모리 해제
+        Marshal.FreeHGlobal(ptr);
+        return result;
+    }
+
+    public static T ToStruct<T>(this byte[] target) where T : struct
+    {
+        int size = Marshal.SizeOf(typeof(T));
+        // 예외처리
+        if(size != target.Length)
+        {
+            throw new InvalidCastException("잘못된 바이트 변환 시도");
+        }
+        
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        Marshal.Copy(target, 0, ptr, size);
+        T result = Marshal.PtrToStructure<T>(ptr);
+        Marshal.FreeHGlobal(ptr);
+        return result;
+
+    }
+
+
 }

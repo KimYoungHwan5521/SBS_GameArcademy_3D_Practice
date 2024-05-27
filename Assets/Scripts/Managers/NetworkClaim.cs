@@ -4,6 +4,7 @@ using UnityEngine;
 using BackEnd;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using BackEnd.Tcp;
 
 // NetworkClaim
 public partial class NetworkManager : Manager
@@ -158,6 +159,36 @@ public partial class NetworkManager : Manager
         MatchCard wantCard = GameManager.Instance.NetworkManager.matchCardArray[index];
 
         Backend.Match.RequestMatchMaking(wantCard.matchType, wantCard.modeType, wantCard.inDate);
+
+    }
+
+    public static void ClaimJoinRoom(string inDate, BackEnd.Tcp.MatchInGameRoomInfo room)
+    {
+        GameManager.Instance.StartCoroutine(JoinRoom(inDate, room));
+    }
+
+    // 접속 요청 비동기로
+    public static IEnumerator JoinRoom(string inDate, BackEnd.Tcp.MatchInGameRoomInfo room)
+    {
+        // 게임 서버에 접속 요청
+        // 요청을 할 수 있었는지 여부를 나타냄
+        // 매칭 성공했을 때 -> (월드진입X) -> 게임서버 -> 게임룸 진입
+        ErrorInfo info = null;
+        yield return new WaitForFunction(() => { Backend.Match.JoinGameServer(room.m_inGameServerEndPoint.m_address, room.m_inGameServerEndPoint.m_port, false, out info); });
+        
+        GameManager.Instance.NetworkManager.currentState = NetworkState.JoinGameServer;
+        yield return new WaitWhile(() => GameManager.Instance.NetworkManager.currentState == NetworkState.JoinGameServer);
+
+        if(info.Category == BackEnd.Tcp.ErrorCode.Success)
+        {
+            // 게임 서버 진입 메세지를 받았다 -> 게임 룸 진입 시도
+            Backend.Match.JoinGameRoom(room.m_inGameRoomToken);
+        }
+        else
+        {
+            UIManager.ClaimError("오류", info.Detail.ToString(), "확인", null);
+            yield break;
+        }
 
     }
 

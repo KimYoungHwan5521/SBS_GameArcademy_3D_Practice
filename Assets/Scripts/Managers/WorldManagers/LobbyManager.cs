@@ -37,6 +37,7 @@ public class LobbyManager : WorldManager
             isMatching= false;
             gameStartText.text = "게임시작";
             matching.SetActive(false);
+           
         }
         else
         {
@@ -44,6 +45,8 @@ public class LobbyManager : WorldManager
             matchingTime = 0;
             gameStartText.text = "매칭취소";
             matching.SetActive(true);
+            //StartCoroutine(NetworkManager.MatchStart(0));
+            NetworkManager.ClaimMatch(0);
         }
     }
 }
