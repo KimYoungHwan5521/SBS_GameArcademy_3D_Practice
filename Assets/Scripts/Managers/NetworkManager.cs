@@ -46,17 +46,29 @@ public partial class NetworkManager : Manager
 
     public MatchCard[] matchCardArray;
 
-    
-    Dictionary<SessionId, MatchUserGameRecord> inGameUserInfoDictionary;
-    MatchUserGameRecord myGameRecord;
-    MatchUserGameRecord hostGameRecord;
+    public class PlayerInfo
+    {
+        public MatchUserGameRecord record;
+        public bool isLoaded;
+        public GameObject testObject;
 
-    public static MatchUserGameRecord GetUser(SessionId wantSessionId)
+        public PlayerInfo(MatchUserGameRecord record, bool isLoaded = false)
+        {
+            this.record = record;
+            this.isLoaded = isLoaded;
+        }
+    }
+    
+    Dictionary<SessionId, PlayerInfo> inGameUserInfoDictionary;
+    public static PlayerInfo myGameRecord;
+    public static PlayerInfo hostGameRecord;
+
+    public static PlayerInfo GetUser(SessionId wantSessionId)
     {
         var targetDictionary = GameManager.Instance.NetworkManager.inGameUserInfoDictionary;
         if (targetDictionary == null) return null;
 
-        if(targetDictionary.TryGetValue(wantSessionId, out MatchUserGameRecord result)) return result;
+        if(targetDictionary.TryGetValue(wantSessionId, out PlayerInfo result)) return result;
         else
         {
             UIManager.ClaimError("오류", "유저 정보를 불러오지 못했습니다.", "확인", null);
@@ -64,21 +76,33 @@ public partial class NetworkManager : Manager
         }
     }
 
+    public static PlayerInfo[] GetAllUser()
+    {
+        var targetDictionary = GameManager.Instance.NetworkManager.inGameUserInfoDictionary;
+        List<PlayerInfo> result = new();
+        foreach(var info in targetDictionary)
+        {
+            result.Add(info.Value);
+        }
+        return result.ToArray();
+    }
+
     void AddUserInfoToDictionary(MatchUserGameRecord wantUserInfo)
     {
+        PlayerInfo info = new(wantUserInfo);
         if(wantUserInfo == null) return;
         var targetDictionary = GameManager.Instance.NetworkManager.inGameUserInfoDictionary;
-        if (targetDictionary.TryAdd(wantUserInfo.m_sessionId, wantUserInfo))
+        if (targetDictionary.TryAdd(wantUserInfo.m_sessionId, info))
         {
             Debug.Log($"{wantUserInfo.m_nickname + (wantUserInfo.m_isSuperGamer? "(Host)" : "")} is in this room!");
 
         }
         else
         {
-            targetDictionary[wantUserInfo.m_sessionId] = wantUserInfo;
+            targetDictionary[wantUserInfo.m_sessionId] = info;
         }
-        if (wantUserInfo.m_isSuperGamer) hostGameRecord = wantUserInfo;
-        if (wantUserInfo.m_nickname == GameManager.Instance.NetworkManager.MyNickname) myGameRecord = wantUserInfo;
+        if (wantUserInfo.m_isSuperGamer) hostGameRecord = info;
+        if (wantUserInfo.m_nickname == GameManager.Instance.NetworkManager.MyNickname) myGameRecord = info;
     }
 
     public override IEnumerator Initiate()

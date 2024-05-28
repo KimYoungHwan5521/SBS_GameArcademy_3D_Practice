@@ -127,8 +127,8 @@ public partial class NetworkManager : Manager
         // 이제부터 "매치 서버의 메시지"를 받도록 하겠다.
         // 메시지는 "언제" 받나 : 계속
         // poll : 지금까지 들어온 메시지가 있는지 확인
-        GameManager.ManagerUpdates -= MatchPoll;
-        GameManager.ManagerUpdates += MatchPoll;
+        GameManager.NetworkUpdates -= MatchPoll;
+        GameManager.NetworkUpdates += MatchPoll;
 
 
         GameManager.CloseLoadInfo();    

@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
     public static UpdateFunction CharacterUpdates;
     public static UpdateFunction ObjectUpdates;
     public static UpdateFunction ControllerUpdates;
+    public static UpdateFunction NetworkUpdates;
 
     public static StartFunction ManagerStarts;
     public static StartFunction CharacterStarts;
@@ -106,6 +107,9 @@ public class GameManager : MonoBehaviour
     // 이 게임의 Update는 귀찮지 않는이상 얘만
     private void Update()
     {
+        // 네트워크 업데이트는 게임의 어떤 상황에서도 돌아가게
+        NetworkUpdates?.Invoke(Time.deltaTime);
+
         if (!isGameStart) return;
         // start를 먼저해야함
         // 매니저는 제일 먼저

@@ -115,16 +115,23 @@ public static class Extensions
 
     public static T ToStruct<T>(this byte[] target) where T : struct
     {
-        int size = Marshal.SizeOf(typeof(T));
+        // 스트럭트로 바꿔서 형변환 해주는 함수
+        return (T)target.ToStruct(typeof(T));
+
+    }
+
+    public static object ToStruct(this byte[] target, System.Type type)
+    {
+        int size = Marshal.SizeOf(type);
         // 예외처리
-        if(size != target.Length)
+        if (size != target.Length)
         {
             throw new InvalidCastException("잘못된 바이트 변환 시도");
         }
-        
+
         IntPtr ptr = Marshal.AllocHGlobal(size);
         Marshal.Copy(target, 0, ptr, size);
-        T result = Marshal.PtrToStructure<T>(ptr);
+        object result = Marshal.PtrToStructure(ptr, type);
         Marshal.FreeHGlobal(ptr);
         return result;
 

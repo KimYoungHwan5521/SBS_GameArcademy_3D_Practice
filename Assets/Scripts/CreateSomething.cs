@@ -23,9 +23,10 @@ public class CreateSomething : MonoBehaviour
         }
         
         */
-        if(Input.GetKeyDown(KeyCode.Q)) 
+        if(Input.GetKeyDown(KeyCode.Q))
         {
-            NetworkManager.ClaimMatch();
+            Vector3 spawnPos = new Vector3(Random.value, 1, Random.value);
+            NetworkManager.SendMessage(NetworkManager.MessageType.Spawn, new NetworkManager.Spawn_Message() { pos_x = spawnPos.x, pos_y = spawnPos.y, pos_z = spawnPos.z });
         }
     }
 }
