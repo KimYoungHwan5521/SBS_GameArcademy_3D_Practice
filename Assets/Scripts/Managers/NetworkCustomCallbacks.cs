@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BackEnd;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public partial class NetworkManager : Manager
 {
@@ -12,7 +13,7 @@ public partial class NetworkManager : Manager
     // long long : -922경 ~ 922경 : 8 byte
     public enum MessageType : byte
     {
-        Error, LoadComplete, Move, Spawn
+        Error, LoadComplete, Walk, Spawn, Teleport, LookAt, Attack
     }
 
     public struct LoadComplete_Message
@@ -20,16 +21,28 @@ public partial class NetworkManager : Manager
         public int current, max; // 지금까지 로드한 개수, 로드해야할 최대 개수
     };
 
-    public struct Move_Message
-    {
-        public float pos_x, pos_y, pos_z;
-    }
-
     public struct Spawn_Message
     {
         public float pos_x, pos_y, pos_z;
     }
 
+    public struct Walk_Message
+    {
+        public float pos_x, pos_y, pos_z;
+    }
+    public struct Teleport_Message
+    {
+        public float pos_x, pos_y, pos_z;
+    }
+    public struct LookAt_Message
+    {
+        public float pos_x, pos_y, pos_z;
+    }
+
+    public struct Attack_Message
+    {
+        public float pos_x, pos_y, pos_z, rot_x, rot_y, rot_z, scale_x, scale_y, scale_z, duration, damage;
+    }
 
     public static byte[] CreateMessage<T>(MessageType messageType, T container) where T : struct
     {
@@ -108,23 +121,24 @@ public partial class NetworkManager : Manager
                     break;
                 case MessageType.Spawn:
                     Spawn_Message spawnInfo = (Spawn_Message)message;
-                    Vector3 spawnPos = new Vector3(spawnInfo.pos_x, spawnInfo.pos_y, spawnInfo.pos_z);
-                    if (GetUser(args.From.SessionId).testObject != null)
-                    {
-                        GetUser(args.From.SessionId).testObject.transform.position = spawnPos;
-
-                    }
-                    else
-                    {
-                        GameObject inst = PoolManager.Instanciate(ResourceEnum.Prefab.Player, spawnPos);
-                        // 해당하는 유저에게 넣어보기
-                        GetUser(args.From.SessionId).testObject = inst;
-
-                    }
+                    GetUser(args.From.SessionId).controller.Spawn(spawnInfo.pos_x, spawnInfo.pos_y, spawnInfo.pos_z);
                     break;
-                case MessageType.Move:
-                    var agent = GetUser(args.From.SessionId).testObject.GetComponent<NavMeshAgent>();
-                    agent.SetDestination(new Vector3(((Move_Message)message).pos_x, ((Move_Message)message).pos_y, ((Move_Message)message).pos_z));
+                case MessageType.Walk:
+                    Walk_Message walkInfo = (Walk_Message)message;
+                    GetUser(args.From.SessionId).controller.Walk(walkInfo.pos_x, walkInfo.pos_y, walkInfo.pos_z);
+                    break;
+                case MessageType.Teleport:
+                    Teleport_Message teleportInfo = (Teleport_Message)message;
+                    GetUser(args.From.SessionId).controller.Teleport(teleportInfo.pos_x, teleportInfo.pos_y, teleportInfo.pos_z);
+                    break;
+                case MessageType.LookAt:
+                    LookAt_Message lookAtInfo = (LookAt_Message)message;
+                    GetUser(args.From.SessionId).controller.LookAt(lookAtInfo.pos_x, lookAtInfo.pos_y, lookAtInfo.pos_z);
+                    break;
+                case MessageType.Attack:
+                    Attack_Message attackInfo = (Attack_Message)message;
+                    Vector3 wantPos = GetUser(args.From.SessionId).controller.transform.position;
+                    GetUser(args.From.SessionId).controller.Attack(wantPos.x, wantPos.y, wantPos.z, attackInfo.rot_x, attackInfo.rot_y, attackInfo.rot_z, attackInfo.scale_x, attackInfo.scale_y, attackInfo.scale_z, attackInfo.duration, attackInfo.damage);
                     break;
                 case MessageType.Error:
                 default:

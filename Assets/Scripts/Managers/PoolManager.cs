@@ -103,7 +103,7 @@ public class PoolManager : Manager
 
     }
 
-    public static GameObject Instanciate(ResourceEnum.Prefab target, Vector3 position)
+    public static GameObject Instantiate(ResourceEnum.Prefab target, Vector3 position)
     {
         GameObject result = Instantiate(target);
         result.transform.position = position;
@@ -111,15 +111,15 @@ public class PoolManager : Manager
     }
 
 
-    public static GameObject Instanciate(ResourceEnum.Prefab target, Vector3 position, Vector3 eulerAngles)
+    public static GameObject Instantiate(ResourceEnum.Prefab target, Vector3 position, Vector3 eulerAngles)
     {
-        GameObject result = Instanciate(target, position);
+        GameObject result = Instantiate(target, position);
         result.transform.eulerAngles = eulerAngles;
         return result;
     }
 
 
-    public static GameObject Instanciate(ResourceEnum.Prefab target, Transform wantParent)
+    public static GameObject Instantiate(ResourceEnum.Prefab target, Transform wantParent)
     {
         GameObject origin = ResourceManager.GetPrefab(target);
         GameObject result = Instantiate(target);

@@ -49,8 +49,8 @@ public partial class NetworkManager : Manager
     public class PlayerInfo
     {
         public MatchUserGameRecord record;
+        public CustomController controller;
         public bool isLoaded;
-        public GameObject testObject;
 
         public PlayerInfo(MatchUserGameRecord record, bool isLoaded = false)
         {

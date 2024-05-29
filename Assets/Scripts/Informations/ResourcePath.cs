@@ -3,7 +3,7 @@ public static class ResourcePath
 {
     public static string[] prefabPathArray =
     {
-        "Characters/Arissa", "UI/LogInCanvas", "UI/ErrorWindow", "UI/CreateNicknameCanvas", "Characters/Player"
+        "Characters/Arissa", "UI/LogInCanvas", "UI/ErrorWindow", "UI/CreateNicknameCanvas", "Characters/Player", "HitBoxes/HitBox"
     };
 
     public static string[] spritePathArray =

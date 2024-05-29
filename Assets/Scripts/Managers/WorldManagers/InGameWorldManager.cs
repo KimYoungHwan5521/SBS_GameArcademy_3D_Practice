@@ -16,6 +16,12 @@ public class InGameWorldManager : WorldManager
             foreach(NetworkManager.PlayerInfo currentPlayer in NetworkManager.GetAllUser())
             {
                 if (currentPlayer.isLoaded == false) return false;
+                else if(currentPlayer.controller == null)
+                {
+                    // 컴포넌트는 무조건 게임오브젝트 안에 있어야 한다.
+                    var inst = new GameObject($"{currentPlayer.record.m_nickname}'s controller", NetworkManager.myGameRecord == currentPlayer ? typeof(LocalPlayerController) : typeof(NetworkPlayerController));
+                    currentPlayer.controller = inst.GetComponent<CustomController>();
+                }
             }
             return true;
         });
