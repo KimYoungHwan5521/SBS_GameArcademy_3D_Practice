@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CustomCharacter : MonoBehaviour
+public abstract class CustomCharacter : MyComponent
 {
     CustomController _controller;
     public virtual CustomController Controller => _controller;
+
+    public System.Action<string> AnimTrigger;
+    public System.Action<string, float> AnimFloat;
+    public System.Action<string, int> AnimInt;
+    public System.Action<string, bool> AnimBool;
 
     public virtual bool TryPossesion() => _controller == null;
 

@@ -10,6 +10,20 @@ public class NavMeshCharacter : CustomCharacter
 {
     [SerializeField] NavMeshAgent agent;
 
+    Vector3 lastFramePosition;
+
+    protected override void MyUpdate(float deltaTime)
+    {
+        base.MyUpdate(deltaTime);
+        Vector3 positionDiff = transform.position - lastFramePosition;
+        AnimFloat?.Invoke("HorizontalSpeed", positionDiff.magnitude / deltaTime);
+        lastFramePosition= transform.position;
+
+        Vector3 localDirection = transform.InverseTransformDirection(positionDiff.normalized);
+        AnimFloat?.Invoke("MoveFoward", localDirection.z);
+        AnimFloat?.Invoke("MoveRight", localDirection.x);
+    }
+
     protected override void RegistrationFunction(CustomController targetController)
     {
         targetController.DoWalk -= Walk; 
@@ -49,6 +63,7 @@ public class NavMeshCharacter : CustomCharacter
 
     public virtual void Attack(Vector3 position, Vector3 rotation, Vector3 scale, float duration, float damage)
     {
+        AnimTrigger?.Invoke("Attack");
         GameObject hitBox = PoolManager.Instantiate(ResourceEnum.Prefab.HitBox, position, rotation);
         hitBox.transform.localScale = scale;
         Debug.Log($"damage : {damage}");

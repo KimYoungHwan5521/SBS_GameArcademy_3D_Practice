@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public delegate void WalkDelegate(Vector3 wantLocation);
 public delegate void TeleportDelegate(Vector3 wantLocation);
-public delegate void AttackDelegate(Vector3 wantLocation, Vector3 wantRotation, Vector3 wantScale, float duration, float damage);
+public delegate void AttackDelegate(Vector3 wantLocation, Vector3 wantRotationEuler, Vector3 wantScale, float duration, float damage);
 public delegate void LookAtDelegate(Vector3 wantLocation);
 
 public class CustomController : MyComponent
@@ -49,9 +49,9 @@ public class CustomController : MyComponent
     }
 
     // 공격
-    public void Attack(float pos_x, float pos_y, float pos_z, float rot_x, float rot_y, float rot_z, float scale_x, float scale_y, float scale_z, float duration, float damage)
+    public void Attack(ref NetworkManager.Attack_Message message)
     {
-        DoAttack?.Invoke(new Vector3(pos_x, pos_y, pos_z), new Vector3(rot_x, rot_y, rot_z), new Vector3(scale_x, scale_y, scale_z), duration, damage);
+        DoAttack?.Invoke(new Vector3(message.pos_x, message.pos_y, message.pos_z), new Vector3(message.rot_x, message.rot_y, message.rot_z), new Vector3(message.scale_x, message.scale_y, message.scale_z), message.duration, message.damage);
     }
 
     // 이 게임은 캐릭터 하나만 쓰니까

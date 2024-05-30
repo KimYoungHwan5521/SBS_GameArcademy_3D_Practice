@@ -138,7 +138,7 @@ public partial class NetworkManager : Manager
                 case MessageType.Attack:
                     Attack_Message attackInfo = (Attack_Message)message;
                     Vector3 wantPos = GetUser(args.From.SessionId).controller.transform.position;
-                    GetUser(args.From.SessionId).controller.Attack(wantPos.x, wantPos.y, wantPos.z, attackInfo.rot_x, attackInfo.rot_y, attackInfo.rot_z, attackInfo.scale_x, attackInfo.scale_y, attackInfo.scale_z, attackInfo.duration, attackInfo.damage);
+                    GetUser(args.From.SessionId).controller.Attack(ref attackInfo);
                     break;
                 case MessageType.Error:
                 default:

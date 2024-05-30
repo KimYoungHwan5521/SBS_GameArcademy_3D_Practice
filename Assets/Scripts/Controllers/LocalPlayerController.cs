@@ -23,26 +23,33 @@ public class LocalPlayerController : CustomController
             {
                 NetworkManager.SendMessage(NetworkManager.MessageType.Walk, new NetworkManager.Walk_Message() { pos_x = hit.point.x, pos_y = hit.point.y, pos_z = hit.point.z });
             }
+
+            // Attack
+            if(Input.GetKeyDown(KeyCode.A) && ControlledCharacter)
+            {
+                Vector3 attackDirection = hit.point - ControlledCharacter.transform.position;
+                attackDirection.y = 0;
+                attackDirection.Normalize();
+                //attackDirection = attackDirection.GetVerticalRotate(-30).normalized;
+                Vector3 attackRotation = (Quaternion.LookRotation(attackDirection)).eulerAngles;
+                NetworkManager.SendMessage(NetworkManager.MessageType.Attack, new NetworkManager.Attack_Message()
+                {
+                    pos_x = ControlledCharacter.transform.position.x + attackDirection.x,
+                    pos_y = ControlledCharacter.transform.position.y,
+                    pos_z = ControlledCharacter.transform.position.z + attackDirection.z,
+                    rot_x = attackRotation.x,
+                    rot_y = attackRotation.y,
+                    rot_z = attackRotation.z,
+                    scale_x = 1,
+                    scale_y = 2,
+                    scale_z = 1,
+                    duration = 1f,
+                    damage = 10
+                });
+                //StartCoroutine(Skill(ControlledCharacter, null, attackRotation));
+            }
         }
 
-        // Attack
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            NetworkManager.SendMessage(NetworkManager.MessageType.Attack, new NetworkManager.Attack_Message()
-            {
-                pos_x = 0,
-                pos_y = 0,
-                pos_z = 0,
-                rot_x = 0,
-                rot_y = 0,
-                rot_z = 0,
-                scale_x = 1,
-                scale_y = 1,
-                scale_z = 4,
-                duration = 1f,
-                damage = 10
-            });
-        }
 
         if(Time.time - lastUpdateTime >= wantNetworkUpdateTime)
         {
@@ -59,4 +66,29 @@ public class LocalPlayerController : CustomController
 
 
     }
+
+    IEnumerator Skill(CustomCharacter from, CustomCharacter to, Vector3 attackRotation)
+    {
+        for(int i=0; i<128; i++)
+        {
+            Vector3 direction = (i * 3f).GetAngledVector();
+            Quaternion quaternion= Quaternion.LookRotation(direction);
+            NetworkManager.SendMessage(NetworkManager.MessageType.Attack, new NetworkManager.Attack_Message()
+            {
+                pos_x = (from.transform.position + direction).x,
+                pos_y = (from.transform.position + direction).y,
+                pos_z = (from.transform.position + direction).z,
+                rot_x = attackRotation.x,
+                rot_y = attackRotation.y,
+                rot_z = attackRotation.z,
+                scale_x = 2,
+                scale_y = 1,
+                scale_z = 1,
+                duration = 1f,
+                damage = 10
+            });
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
 }

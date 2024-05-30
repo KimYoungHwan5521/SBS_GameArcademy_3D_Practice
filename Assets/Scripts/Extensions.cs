@@ -137,5 +137,74 @@ public static class Extensions
 
     }
 
+    // 벡터 회전
+    public static Vector3 GetHorizontalRotate(this Vector3 target, float angle)
+    {
+        // 벡터의 회전 공식
+        // 벡터 변환 행렬    ┌cosA -sinA┐┌x┐
+        //                  └sinA  cosA┘└z┘
+        // ┌cosA    0   -sinA┐┌x┐
+        // │0       1       0││y│
+        // └sinA    0    cosA┘└z┘
+        /// x' = xCosA - zSinA
+        /// z' = xSinA + zCosA
+        float theta = angle * Mathf.Deg2Rad;
+        return new Vector3(
+            target.x * Mathf.Cos(theta) - target.z * Mathf.Sin(theta),
+            target.y,
+            target.x * Mathf.Sin(theta) + target.z * Mathf.Cos(theta)
+        );
+    }
+
+    public static Vector3 GetVerticalRotate(this Vector3 target, float angle)
+    {
+        float theta = angle * Mathf.Deg2Rad;
+
+        float horizontalLength = Mathf.Sqrt(target.x * target.x + target.z * target.z);
+        return new Vector3
+        (
+        // ┌cosA -sinA┐┌ y ┐
+        // └sinA  cosA┘└x,z┘
+        /// y' = y * CosA - Sqrt(x^2+z^2) * SinA
+        /// (x' : z=0, z' : x=0)  = y * SinA + Sqrt(x^2+z^2) * CosA
+            target.y * Mathf.Sin(theta) + target.x * Mathf.Cos(theta),
+            target.y * Mathf.Cos(theta) - horizontalLength * Mathf.Sin(theta),
+            target.y * Mathf.Sin(theta) + target.z * Mathf.Cos(theta)
+        );
+
+    }
+
+    // 수평각도를 전달 -> 벡터 반환
+    public static Vector3 GetAngledVector(this float horizontalAngle)
+    {
+        float theta = horizontalAngle * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(theta), 0, Mathf.Cos(theta));
+    }
+
+    public static Vector3 GetAngledVector(this float horizontalAngle, float verticalAngle)
+    {
+        float horizontalTheta = horizontalAngle * Mathf.Deg2Rad;
+        float verticalTheta = verticalAngle * Mathf.Deg2Rad;
+
+        return new Vector3(
+            Mathf.Sin(horizontalTheta) * Mathf.Abs(Mathf.Cos(verticalTheta)),
+            Mathf.Sin(horizontalTheta), 
+            Mathf.Cos(horizontalTheta) * Mathf.Abs(Mathf.Cos(verticalTheta))
+        );
+    }
+
+    public static float GetHorizontalAngle(this Vector3 vector)
+    {
+        // 수평 : x, z
+        // atan : 이미 만들어진 원에서 원본 라디안 추출
+        return Mathf.Atan2(vector.z, vector.x) * Mathf.Rad2Deg;
+    }
+    
+    public static float GetVerticalAngle(this Vector3 vector)
+    {
+        // 수평 : y x,z
+        return Mathf.Atan2(Mathf.Sqrt(vector.z * vector.z + vector.x * vector.x), vector.y) * Mathf.Rad2Deg;
+    }
+
 
 }
